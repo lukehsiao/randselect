@@ -4,7 +4,7 @@ extern crate randselect;
 fn runs_without_error() {
     let test_args = randselect::Args {
         verbosity: 3,
-        out_dir: "/tmp/randselect/".to_string(),
+        out_dir: "./test/".to_string(),
         in_dir: ".".to_string(),
         num_files: 10,
         move_files: false,

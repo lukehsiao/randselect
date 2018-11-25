@@ -1,0 +1,19 @@
+language: rust
+cache: cargo
+
+rust:
+  - stable
+
+notifications:
+  email: false
+
+matrix:
+  fast_finish: true
+  include:
+    - os: linux
+      dist: xenial
+    - os: windows
+    - os: osx
+
+script:
+- cargo test

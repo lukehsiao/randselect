@@ -25,42 +25,10 @@ pub fn setup_logging(verbosity: u8, no_color: bool) -> Result<(), ()> {
     let mut base_config = fern::Dispatch::new();
 
     base_config = match verbosity {
-        0 => base_config
-            .level(log::LevelFilter::Warn)
-            .level_for("tokio", log::LevelFilter::Error)
-            .level_for("reqwest", log::LevelFilter::Error)
-            .level_for("tokio_reactor", log::LevelFilter::Error)
-            .level_for("html5ever", log::LevelFilter::Off)
-            .level_for("hyper", log::LevelFilter::Error)
-            .level_for("want", log::LevelFilter::Error)
-            .level_for("mio", log::LevelFilter::Error),
-        1 => base_config
-            .level(log::LevelFilter::Info)
-            .level_for("tokio", log::LevelFilter::Warn)
-            .level_for("reqwest", log::LevelFilter::Warn)
-            .level_for("tokio_reactor", log::LevelFilter::Warn)
-            .level_for("html5ever", log::LevelFilter::Off)
-            .level_for("hyper", log::LevelFilter::Warn)
-            .level_for("want", log::LevelFilter::Warn)
-            .level_for("mio", log::LevelFilter::Warn),
-        2 => base_config
-            .level(log::LevelFilter::Debug)
-            .level_for("tokio", log::LevelFilter::Info)
-            .level_for("reqwest", log::LevelFilter::Info)
-            .level_for("tokio_reactor", log::LevelFilter::Info)
-            .level_for("html5ever", log::LevelFilter::Off)
-            .level_for("hyper", log::LevelFilter::Info)
-            .level_for("want", log::LevelFilter::Info)
-            .level_for("mio", log::LevelFilter::Info),
-        3 | _ => base_config
-            .level(log::LevelFilter::Trace)
-            .level_for("tokio", log::LevelFilter::Info)
-            .level_for("reqwest", log::LevelFilter::Info)
-            .level_for("tokio_reactor", log::LevelFilter::Info)
-            .level_for("html5ever", log::LevelFilter::Off)
-            .level_for("hyper", log::LevelFilter::Info)
-            .level_for("want", log::LevelFilter::Info)
-            .level_for("mio", log::LevelFilter::Info),
+        0 => base_config.level(log::LevelFilter::Warn),
+        1 => base_config.level(log::LevelFilter::Info),
+        2 => base_config.level(log::LevelFilter::Debug),
+        3 | _ => base_config.level(log::LevelFilter::Trace),
     };
 
     let stdout_config = fern::Dispatch::new()
@@ -96,37 +64,13 @@ pub fn setup_logging(verbosity: u8, no_color: bool) -> Result<(), ()> {
 }
 
 #[cfg(windows)]
-pub fn setup_logging(verbosity: u8, _no_color: bool) -> Result<()> {
+pub fn setup_logging(verbosity: u8, _no_color: bool) -> Result<(), ()> {
     let mut base_config = fern::Dispatch::new();
     base_config = match verbosity {
-        0 => base_config
-            .level(log::LevelFilter::Warn)
-            .level_for("tokio", log::LevelFilter::Error)
-            .level_for("reqwest", log::LevelFilter::Error)
-            .level_for("tokio_reactor", log::LevelFilter::Error)
-            .level_for("html5ever", log::LevelFilter::Off)
-            .level_for("hyper", log::LevelFilter::Error),
-        1 => base_config
-            .level(log::LevelFilter::Info)
-            .level_for("tokio", log::LevelFilter::Warn)
-            .level_for("reqwest", log::LevelFilter::Warn)
-            .level_for("tokio_reactor", log::LevelFilter::Warn)
-            .level_for("html5ever", log::LevelFilter::Off)
-            .level_for("hyper", log::LevelFilter::Warn),
-        2 => base_config
-            .level(log::LevelFilter::Debug)
-            .level_for("tokio", log::LevelFilter::Info)
-            .level_for("reqwest", log::LevelFilter::Info)
-            .level_for("tokio_reactor", log::LevelFilter::Info)
-            .level_for("html5ever", log::LevelFilter::Off)
-            .level_for("hyper", log::LevelFilter::Info),
-        3 | _ => base_config
-            .level(log::LevelFilter::Trace)
-            .level_for("tokio", log::LevelFilter::Debug)
-            .level_for("reqwest", log::LevelFilter::Debug)
-            .level_for("tokio_reactor", log::LevelFilter::Debug)
-            .level_for("html5ever", log::LevelFilter::Off)
-            .level_for("hyper", log::LevelFilter::Debug),
+        0 => base_config.level(log::LevelFilter::Warn),
+        1 => base_config.level(log::LevelFilter::Info),
+        2 => base_config.level(log::LevelFilter::Debug),
+        3 | _ => base_config.level(log::LevelFilter::Trace),
     };
 
     let stdout_config = fern::Dispatch::new()

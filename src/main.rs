@@ -50,7 +50,7 @@ fn parse_args() -> randselect::Args {
             Arg::with_name("seed")
                 .short("s")
                 .value_name("SEED")
-                .help("The seed to use for the PRNG.")
+                .help("The seed to use for the PRNG (u64).")
                 .required(false),
         ).arg(
             Arg::with_name("move")
