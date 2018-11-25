@@ -1,0 +1,18 @@
+[package]
+name = "randselect"
+version = "0.1.0"
+authors = ["Luke Hsiao <lwhsiao@stanford.edu>"]
+license = "MIT"
+description= "Tool for randomly selecting files from a directory."
+
+[dependencies]
+chrono = "0.4"
+clap = "2.32"
+log = "0.4"
+rand = "0.6"
+
+[target.'cfg(unix)'.dependencies]
+fern = { version="0.5", features=["colored"] }
+
+[target.'cfg(windows)'.dependencies]
+fern = "0.5"
