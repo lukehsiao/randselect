@@ -1,5 +1,5 @@
 //! # randselect
-//! This crate provides a simple commandline utility for randomly selecting N
+//! This crate provides a simple command line utility for randomly selecting N
 //! files from a directory and copying/moving them to a target directory.
 //!
 //! `randselect` operates (inefficiently) by generating a random permutation of
@@ -14,6 +14,7 @@
 //!     randselect [FLAGS] [OPTIONS] -i <IN_DIR> -n <N> -o <OUT_DIR>
 //!
 //! FLAGS:
+//!     -g, --go          Execute the copy or move. Specify a seed for deterministic behavior.
 //!     -h, --help        Prints help information
 //!     -m                Whether to move the selected files rather than copy.
 //!     -c, --no_color    Disable colorized output. Only supported in Unix-like OSes.
@@ -28,6 +29,7 @@
 //! ```
 
 extern crate chrono;
+extern crate colored;
 #[macro_use]
 extern crate log;
 extern crate fern;
@@ -35,10 +37,12 @@ extern crate rand;
 
 pub mod utils;
 
-use rand::prelude::{SeedableRng, SliceRandom, StdRng};
-use rand::FromEntropy;
 use std::fs;
 use std::io::{Error, ErrorKind};
+
+use colored::Colorize;
+use rand::prelude::{SeedableRng, SliceRandom, StdRng};
+use rand::FromEntropy;
 
 #[derive(Debug)]
 pub struct Args {
@@ -47,7 +51,7 @@ pub struct Args {
     pub in_dir: String,
     pub num_files: usize,
     pub move_files: bool,
-    pub dry_run: bool,
+    pub go: bool,
     pub no_color: bool,
     pub seed: Option<u64>,
 }
@@ -103,7 +107,7 @@ fn paths_are_valid(in_dir: &str, out_dir: &str) -> Result<(), Error> {
 }
 
 /// The primary driver of the library to process the provided Args.
-pub fn run(args: &Args) -> Result<(), Error> {
+pub fn run(args: &mut Args) -> Result<(), Error> {
     debug!{"Input args: {:#?}", args};
 
     paths_are_valid(args.in_dir.as_str(), args.out_dir.as_str())?;
@@ -111,29 +115,32 @@ pub fn run(args: &Args) -> Result<(), Error> {
     match get_shuffled_paths(args) {
         Ok(paths) => {
             let selected_files: Vec<&fs::DirEntry> = paths.iter().take(args.num_files).collect();
-            if args.dry_run {
-                // If debug, just print which files would be selected
-                warn!{"This is a DRY RUN."};
-                for file in selected_files {
-                    print!{"{}\n", file.path().display()};
+            for file in selected_files {
+                let dest = format!(
+                    "{}/{}",
+                    args.out_dir,
+                    file.file_name().into_string().unwrap()
+                );
+                // Delete file if move
+                if args.move_files {
+                    println!("-- {}", file.path().to_str().unwrap().red());
                 }
-            } else {
-                debug!{"{:#?}", selected_files};
-                fs::create_dir_all(&args.out_dir).unwrap();
-                for file in selected_files {
+                println!("++ {}", dest.green());
+                if args.go {
+                    // Create output dir
+                    fs::create_dir_all(&args.out_dir).unwrap();
+
                     // Copy file
-                    let dest = format!(
-                        "{}/{}",
-                        args.out_dir,
-                        file.file_name().into_string().unwrap()
-                    );
-                    fs::copy(file.path(), dest).unwrap();
+                    fs::copy(file.path(), &dest).unwrap();
 
                     // Delete file if move
                     if args.move_files {
                         fs::remove_file(file.path()).unwrap();
                     }
                 }
+            }
+            if !args.go {
+                println!("Re-run randselect with --go to write these changes to the filesystem.");
             }
             return Ok(());
         }

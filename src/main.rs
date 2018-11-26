@@ -1,4 +1,5 @@
 extern crate chrono;
+extern crate colored;
 #[macro_use]
 extern crate clap;
 extern crate fern;
@@ -15,7 +16,6 @@ use clap::{App, AppSettings, Arg};
 
 use utils::setup_logging;
 
-/// Get the URL provided on the commandline.
 fn parse_args() -> randselect::Args {
     let matches = App::new("randselect")
         .version(crate_version!())
@@ -58,10 +58,11 @@ fn parse_args() -> randselect::Args {
                 .help("Whether to move the selected files rather than copy.")
                 .required(false),
         ).arg(
-            Arg::with_name("dry_run")
-                .short("d")
-                .help("Don't copy or move, just print what would be moved.")
-                .required(false),
+            Arg::with_name("go")
+                .short("g")
+                .long("go")
+                .required(false)
+                .help("Execute the copy or move. Specify a seed for deterministic behavior."),
         ).arg(
             Arg::with_name("no_color")
                 .short("c")
@@ -92,18 +93,24 @@ fn parse_args() -> randselect::Args {
         None => None,
     };
 
+    let mut out_dir = String::from(
+        matches
+            .value_of("out_dir")
+            .unwrap_or("No output directory."),
+    );
+
+    if out_dir.ends_with("/") {
+        out_dir.pop();
+    }
+
     // Return Config
     randselect::Args {
-        out_dir: String::from(
-            matches
-                .value_of("out_dir")
-                .unwrap_or("No output directory."),
-        ),
+        out_dir: out_dir,
         in_dir: String::from(matches.value_of("in_dir").unwrap_or("No input directory.")),
         num_files: num_files,
         seed: seed,
         move_files: matches.is_present("move"),
-        dry_run: matches.is_present("dry_run"),
+        go: matches.is_present("go"),
         no_color: no_color,
         verbosity: match matches.occurrences_of("verbosity") {
             0 => 0,
@@ -115,9 +122,9 @@ fn parse_args() -> randselect::Args {
 }
 
 fn main() {
-    let args = parse_args();
+    let mut args = parse_args();
     setup_logging(args.verbosity, args.no_color).expect("Unable to setup logging.");
-    if let Err(e) = randselect::run(&args) {
+    if let Err(e) = randselect::run(&mut args) {
         warn!("{:?}: {:?}", e, args);
         process::exit(1);
     };

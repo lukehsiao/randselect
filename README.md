@@ -3,7 +3,7 @@
 [![docs.rs](https://docs.rs/randselect/badge.svg)](https://docs.rs/randselect)
 [![Travis (.com)](https://img.shields.io/travis/com/lukehsiao/randselect.svg)](https://travis-ci.com/lukehsiao/randselect)
 
-This crate provides a simple commandline utility for randomly selecting N
+This crate provides a simple command line utility for randomly selecting N
 files from a directory and copying/moving them to a target directory.
 
 `randselect` operates (inefficiently) by generating a random permutation of
@@ -27,6 +27,7 @@ USAGE:
     randselect [FLAGS] [OPTIONS] -i <IN_DIR> -n <N> -o <OUT_DIR>
 
 FLAGS:
+    -g, --go          Execute the copy or move. Specify a seed for deterministic behavior.
     -h, --help        Prints help information
     -m                Whether to move the selected files rather than copy.
     -c, --no_color    Disable colorized output. Only supported in Unix-like OSes.
