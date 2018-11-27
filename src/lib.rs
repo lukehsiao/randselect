@@ -112,6 +112,10 @@ pub fn run(args: &mut Args) -> Result<(), Error> {
 
     paths_are_valid(args.in_dir.as_str(), args.out_dir.as_str())?;
 
+    if args.no_color {
+        colored::control::set_override(false);
+    }
+
     match get_shuffled_paths(args) {
         Ok(paths) => {
             let selected_files: Vec<&fs::DirEntry> = paths.iter().take(args.num_files).collect();

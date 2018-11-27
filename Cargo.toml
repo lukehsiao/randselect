@@ -1,6 +1,6 @@
 [package]
 name = "randselect"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["Luke Hsiao <lwhsiao@stanford.edu>"]
 license = "MIT"
 description= "Tool for randomly selecting files from a directory."
