@@ -127,9 +127,9 @@ pub fn run(args: &mut Args) -> Result<(), Error> {
                 );
                 // Delete file if move
                 if args.move_files {
-                    println!("-- {}", file.path().to_str().unwrap().red());
+                    println!("{} {}", "--".red(), file.path().to_str().unwrap().red());
                 }
-                println!("++ {}", dest.green());
+                println!("{} {}", "++".green(), dest.green());
                 if args.go {
                     // Create output dir
                     fs::create_dir_all(&args.out_dir).unwrap();
