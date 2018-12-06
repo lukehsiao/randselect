@@ -1,14 +1,9 @@
-extern crate chrono;
-extern crate fern;
-extern crate log;
-
 use std;
 
-#[cfg(unix)]
 use fern::colors::{Color, ColoredLevelConfig};
+use log::warn;
 
 /// Setup the logging implementation for use in the library.
-#[cfg(unix)]
 pub fn setup_logging(verbosity: u8, no_color: bool) -> Result<(), ()> {
     // configure colors for the whole line
     let colors_line = ColoredLevelConfig::new()
@@ -54,35 +49,8 @@ pub fn setup_logging(verbosity: u8, no_color: bool) -> Result<(), ()> {
                 level = record.level(),
                 message = message,
             ))
-        }).chain(std::io::stderr());
-
-    if let Err(_) = base_config.chain(stdout_config).apply() {
-        // Still return Ok, but warn the user.
-        warn!("Logger was already set and cannot be reset.");
-    }
-    Ok(())
-}
-
-#[cfg(windows)]
-pub fn setup_logging(verbosity: u8, _no_color: bool) -> Result<(), ()> {
-    let mut base_config = fern::Dispatch::new();
-    base_config = match verbosity {
-        0 => base_config.level(log::LevelFilter::Warn),
-        1 => base_config.level(log::LevelFilter::Info),
-        2 => base_config.level(log::LevelFilter::Debug),
-        3 | _ => base_config.level(log::LevelFilter::Trace),
-    };
-
-    let stdout_config = fern::Dispatch::new()
-        .format(move |out, message, record| {
-            out.finish(format_args!(
-                "[{date}][{target}][{level}] {message}",
-                date = chrono::Local::now().format("%Y-%m-%d %H:%M:%S"),
-                target = record.target(),
-                level = record.level(),
-                message = message,
-            ))
-        }).chain(std::io::stderr());
+        })
+        .chain(std::io::stderr());
 
     if let Err(_) = base_config.chain(stdout_config).apply() {
         // Still return Ok, but warn the user.

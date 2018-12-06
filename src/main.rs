@@ -1,20 +1,13 @@
-extern crate chrono;
-extern crate colored;
-#[macro_use]
-extern crate clap;
-extern crate fern;
-#[macro_use]
-extern crate log;
-extern crate rand;
-
 mod utils;
 
 use std::env;
 use std::process;
 
-use clap::{App, AppSettings, Arg};
+use clap::{crate_authors, crate_version, App, AppSettings, Arg};
+use human_panic::setup_panic;
+use log::warn;
 
-use utils::setup_logging;
+use crate::utils::setup_logging;
 
 fn parse_args() -> randselect::Args {
     let matches = App::new("randselect")
@@ -29,46 +22,54 @@ fn parse_args() -> randselect::Args {
                 .value_name("IN_DIR")
                 .help("The input directory to select from.")
                 .required(true),
-        ).arg(
+        )
+        .arg(
             Arg::with_name("out_dir")
                 .short("o")
                 .value_name("OUT_DIR")
                 .help("The directory to output to. Will be created if it doesn't exist.")
                 .required(true),
-        ).arg(
+        )
+        .arg(
             Arg::with_name("verbosity")
                 .short("v")
                 .multiple(true)
                 .help("Sets the level of verbosity"),
-        ).arg(
+        )
+        .arg(
             Arg::with_name("num_files")
                 .short("n")
                 .value_name("N")
                 .help("The number of files to select.")
                 .required(true),
-        ).arg(
+        )
+        .arg(
             Arg::with_name("seed")
                 .short("s")
                 .value_name("SEED")
                 .help("The seed to use for the PRNG (u64).")
                 .required(false),
-        ).arg(
+        )
+        .arg(
             Arg::with_name("move")
                 .short("m")
                 .help("Whether to move the selected files rather than copy.")
                 .required(false),
-        ).arg(
+        )
+        .arg(
             Arg::with_name("go")
                 .short("g")
                 .long("go")
                 .required(false)
                 .help("Execute the copy or move. Specify a seed for deterministic behavior."),
-        ).arg(
+        )
+        .arg(
             Arg::with_name("no_color")
                 .short("c")
                 .long("no_color")
                 .help("Disable colorized output. Only supported in Unix-like OSes."),
-        ).get_matches();
+        )
+        .get_matches();
 
     // Per no-color.org standards, if the NO_COLOR environment variable is set,
     // set to no color regardless of the flags.
@@ -80,7 +81,7 @@ fn parse_args() -> randselect::Args {
     let num_files = match matches.value_of("num_files").unwrap().parse() {
         Ok(n) => n,
         Err(e) => {
-            warn!{"{:?}\nDefaulting to 1 file.", e};
+            warn! {"{:?}\nDefaulting to 1 file.", e};
             1
         }
     };
@@ -122,6 +123,7 @@ fn parse_args() -> randselect::Args {
 }
 
 fn main() {
+    setup_panic!();
     let mut args = parse_args();
     setup_logging(args.verbosity, args.no_color).expect("Unable to setup logging.");
     if let Err(e) = randselect::run(&mut args) {

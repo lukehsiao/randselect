@@ -1,6 +1,6 @@
 [package]
 name = "randselect"
-version = "0.2.2"
+version = "0.2.3"
 authors = ["Luke Hsiao <lwhsiao@stanford.edu>"]
 license = "MIT"
 description= "Tool for randomly selecting files from a directory."
@@ -10,16 +10,13 @@ homepage = "https://github.com/lukehsiao/randselect"
 documentation = "https://docs.rs/randselect"
 keywords = ["randselect", "random", "directory", "files"]
 categories = ["command-line-utilities"]
+edition = "2018"
 
 [dependencies]
 chrono = "0.4"
 clap = "2.32"
 colored = "1.6"
+fern = { version="0.5", features=["colored"] }
+human-panic = "1.0"
 log = "0.4"
 rand = "0.6"
-
-[target.'cfg(unix)'.dependencies]
-fern = { version="0.5", features=["colored"] }
-
-[target.'cfg(windows)'.dependencies]
-fern = "0.5"

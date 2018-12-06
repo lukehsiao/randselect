@@ -28,19 +28,13 @@
 //!     -s <SEED>           The seed to use for the PRNG (u64).
 //! ```
 
-extern crate chrono;
-extern crate colored;
-#[macro_use]
-extern crate log;
-extern crate fern;
-extern crate rand;
-
 pub mod utils;
 
 use std::fs;
 use std::io::{Error, ErrorKind};
 
 use colored::Colorize;
+use log::{debug, error, trace};
 use rand::prelude::{SeedableRng, SliceRandom, StdRng};
 use rand::FromEntropy;
 
@@ -71,7 +65,7 @@ fn get_shuffled_paths(args: &Args) -> Result<Vec<fs::DirEntry>, Error> {
 
             // Generate a random permutation of the files
             vec_paths.shuffle(&mut rng);
-            trace!{"Shuffled: {:#?}", vec_paths};
+            trace! {"Shuffled: {:#?}", vec_paths};
             return Ok(vec_paths);
         }
         Err(e) => Err(e),
@@ -81,7 +75,7 @@ fn get_shuffled_paths(args: &Args) -> Result<Vec<fs::DirEntry>, Error> {
 fn paths_are_valid(in_dir: &str, out_dir: &str) -> Result<(), Error> {
     let in_path = fs::canonicalize(in_dir)?;
     if !in_path.is_dir() {
-        error!{"Input directory is not a directory: {}", in_dir};
+        error! {"Input directory is not a directory: {}", in_dir};
         return Err(Error::new(
             ErrorKind::InvalidInput,
             "Input directory is not a directory.",
@@ -108,7 +102,7 @@ fn paths_are_valid(in_dir: &str, out_dir: &str) -> Result<(), Error> {
 
 /// The primary driver of the library to process the provided Args.
 pub fn run(args: &mut Args) -> Result<(), Error> {
-    debug!{"Input args: {:#?}", args};
+    debug! {"Input args: {:#?}", args};
 
     paths_are_valid(args.in_dir.as_str(), args.out_dir.as_str())?;
 
