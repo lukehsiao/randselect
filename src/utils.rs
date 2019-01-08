@@ -28,17 +28,19 @@ pub fn setup_logging(verbosity: u8, no_color: bool) -> Result<(), ()> {
 
     let stdout_config = fern::Dispatch::new()
         .format(move |out, message, record| {
-            let mut color_line_start = format!(
-                "\x1B[{}m",
-                colors_line.get_color(&record.level()).to_fg_str()
-            );
-            let mut color_line_end = String::from("\x1B[0m");
-
-            // Clear colors if flag is set
-            if no_color {
-                color_line_start = String::from("");
-                color_line_end = String::from("");
-            }
+            let color_line_start = if no_color {
+                String::from("")
+            } else {
+                format!(
+                    "\x1B[{}m",
+                    colors_line.get_color(&record.level()).to_fg_str()
+                )
+            };
+            let color_line_end = if no_color {
+                String::from("")
+            } else {
+                String::from("\x1B[0m")
+            };
 
             out.finish(format_args!(
                 "{color_line_start}[{date}][{target}][{level}] {message}{color_line_end}",
@@ -52,7 +54,7 @@ pub fn setup_logging(verbosity: u8, no_color: bool) -> Result<(), ()> {
         })
         .chain(std::io::stderr());
 
-    if let Err(_) = base_config.chain(stdout_config).apply() {
+    if base_config.chain(stdout_config).apply().is_err() {
         // Still return Ok, but warn the user.
         warn!("Logger was already set and cannot be reset.");
     }

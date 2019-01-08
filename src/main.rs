@@ -1,6 +1,5 @@
 mod utils;
 
-use std::env;
 use std::process;
 
 use clap::{crate_authors, crate_version, App, AppSettings, Arg};
@@ -71,13 +70,6 @@ fn parse_args() -> randselect::Args {
         )
         .get_matches();
 
-    // Per no-color.org standards, if the NO_COLOR environment variable is set,
-    // set to no color regardless of the flags.
-    let no_color = match env::var("NO_COLOR") {
-        Ok(_) => true,
-        Err(_) => matches.is_present("no_color"),
-    };
-
     let num_files = match matches.value_of("num_files").unwrap().parse() {
         Ok(n) => n,
         Err(e) => {
@@ -100,19 +92,19 @@ fn parse_args() -> randselect::Args {
             .unwrap_or("No output directory."),
     );
 
-    if out_dir.ends_with("/") {
+    if out_dir.ends_with('/') {
         out_dir.pop();
     }
 
     // Return Config
     randselect::Args {
-        out_dir: out_dir,
+        out_dir,
         in_dir: String::from(matches.value_of("in_dir").unwrap_or("No input directory.")),
-        num_files: num_files,
-        seed: seed,
+        num_files,
+        seed,
         move_files: matches.is_present("move"),
         go: matches.is_present("go"),
-        no_color: no_color,
+        no_color: matches.is_present("no_color"),
         verbosity: match matches.occurrences_of("verbosity") {
             0 => 0,
             1 => 1,

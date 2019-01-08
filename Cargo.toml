@@ -1,6 +1,6 @@
 [package]
 name = "randselect"
-version = "0.2.3"
+version = "0.2.4"
 authors = ["Luke Hsiao <lwhsiao@stanford.edu>"]
 license = "MIT"
 description= "Tool for randomly selecting files from a directory."
@@ -14,9 +14,9 @@ edition = "2018"
 
 [dependencies]
 chrono = "0.4"
-clap = "2.32"
-colored = "1.6"
+clap = "2"
+colored = "1"
 fern = { version="0.5", features=["colored"] }
-human-panic = "1.0"
+human-panic = "1"
 log = "0.4"
 rand = "0.6"

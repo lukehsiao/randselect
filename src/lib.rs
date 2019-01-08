@@ -66,7 +66,7 @@ fn get_shuffled_paths(args: &Args) -> Result<Vec<fs::DirEntry>, Error> {
             // Generate a random permutation of the files
             vec_paths.shuffle(&mut rng);
             trace! {"Shuffled: {:#?}", vec_paths};
-            return Ok(vec_paths);
+            Ok(vec_paths)
         }
         Err(e) => Err(e),
     }
@@ -140,7 +140,7 @@ pub fn run(args: &mut Args) -> Result<(), Error> {
             if !args.go {
                 println!("Re-run randselect with --go to write these changes to the filesystem.");
             }
-            return Ok(());
+            Ok(())
         }
         Err(e) => Err(e),
     }
