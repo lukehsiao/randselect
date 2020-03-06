@@ -36,7 +36,6 @@ use std::io::{Error, ErrorKind};
 use colored::Colorize;
 use log::{debug, error, trace};
 use rand::prelude::{SeedableRng, SliceRandom, StdRng};
-use rand::FromEntropy;
 
 #[derive(Debug)]
 pub struct Args {
@@ -161,5 +160,4 @@ mod test {
             panic!("Should have failed with same paths");
         }
     }
-
 }
