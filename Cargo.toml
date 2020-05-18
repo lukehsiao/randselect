@@ -14,7 +14,7 @@ edition = "2018"
 
 [dependencies]
 chrono = "0.4.11"
-clap = "2.33.0"
+clap = "2.33.1"
 colored = "1.9.3"
 fern = { version = "0.6.0", features = ["colored"] }
 human-panic = "1.0.3"
