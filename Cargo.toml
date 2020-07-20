@@ -18,5 +18,5 @@ clap = "2.33.1"
 colored = "1.9.3"
 fern = { version = "0.6.0", features = ["colored"] }
 human-panic = "1.0.3"
-log = "0.4.8"
+log = "0.4.11"
 rand = "0.7.3"
