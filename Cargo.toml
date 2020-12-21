@@ -2,7 +2,7 @@
 name = "randselect"
 version = "0.2.4"
 authors = ["Luke Hsiao <lwhsiao@stanford.edu>"]
-license = "MIT"
+license = "Apache-2.0 OR MIT"
 description= "Tool for randomly selecting files from a directory."
 readme = "README.md"
 repository = "https://github.com/lukehsiao/randselect"
@@ -19,4 +19,12 @@ colored = "2.0.0"
 fern = { version = "0.6.0", features = ["colored"] }
 human-panic = "1.0.3"
 log = "0.4.11"
-rand = "0.7.3"
+rand = "0.8.0"
+
+[profile.release]
+debug = false
+
+[package.metadata.release]
+pre-release-commit-message = "chore: version {{version}}"
+post-release-commit-message = "chore: bump development version to {{next_version}}"
+tag-message = "{{crate_name}} {{version}}"

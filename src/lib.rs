@@ -148,10 +148,15 @@ pub fn run(args: &mut Args) -> Result<(), Error> {
 #[cfg(test)]
 mod test {
     use super::*;
+    use rand::distributions::Alphanumeric;
+    use rand::{thread_rng, Rng};
 
     #[test]
     fn test_valid_paths() {
-        paths_are_valid(".", "/tmp/randselect").expect("Paths are valid.");
+        let rand_output: String =
+            String::from_utf8(thread_rng().sample_iter(&Alphanumeric).take(18).collect()).unwrap();
+
+        paths_are_valid(".", &rand_output).expect("Paths are valid.");
     }
 
     #[test]
