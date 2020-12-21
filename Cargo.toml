@@ -38,6 +38,8 @@ human-panic = "1.0.3"
 log = "0.4.11"
 pretty_env_logger = "0.4.0"
 rand = "0.8.0"
+structopt = "0.3.21"
+thiserror = "1.0.22"
 
 [profile.release]
 debug = false

@@ -11,42 +11,74 @@
 //! Tool for randomly selecting files from a directory.
 //!
 //! USAGE:
-//!     randselect [FLAGS] [OPTIONS] -i <IN_DIR> -n <N> -o <OUT_DIR>
+//!     randselect [FLAGS] [OPTIONS] <OUT_DIR> <IN_DIR>
 //!
 //! FLAGS:
-//!     -g, --go          Execute the copy or move. Specify a seed for deterministic behavior.
-//!     -h, --help        Prints help information
-//!     -m                Whether to move the selected files rather than copy.
-//!     -c, --no_color    Disable colorized output. Only supported in Unix-like OSes.
-//!     -V, --version     Prints version information
+//!     -g, --go            Execute the copy or move. Specify a seed for deterministic behavior
+//!     -h, --help          Prints help information
+//!     -m, --move-files    Whether to move the files from IN_DIR to OUT_DIR, rather than cp
+//!     -V, --version       Prints version information
 //!
 //! OPTIONS:
-//!     -i <IN_DIR>         The input directory to select from.
-//!     -n <N>              The number of files to select.
-//!     -o <OUT_DIR>        The directory to output to. Will be created if it doesn't exist.
-//!     -s <SEED>           The seed to use for the PRNG (u64).
+//!     -n, --num-files <num-files>    The number of files to select [default: 1]
+//!     -s, --seed <seed>              The seed to use for the PRNG (u64)
+//!
+//! ARGS:
+//!     <OUT_DIR>    The directory to output to. Will be created if it doesn't exist
+//!     <IN_DIR>     The input directory to select from
 //! ```
 
 use std::fs;
-use std::io::{Error, ErrorKind};
 
 use colored::Colorize;
 use log::{debug, error, trace};
 use rand::prelude::{SeedableRng, SliceRandom, StdRng};
+use std::io;
+use std::path::{Path, PathBuf};
+use structopt::clap::AppSettings;
+use structopt::StructOpt;
+use thiserror::Error;
 
-#[derive(Debug)]
+#[derive(Error, Debug)]
+pub enum RandSelectError {
+    #[error(transparent)]
+    IoError(#[from] io::Error),
+}
+
+#[derive(Debug, StructOpt)]
+#[structopt(
+    about,
+    setting(AppSettings::ColoredHelp),
+    setting(AppSettings::ColorAuto)
+)]
 pub struct Args {
-    pub out_dir: String,
-    pub in_dir: String,
+    /// The input directory to select from.
+    #[structopt(name = "IN_DIR", parse(from_os_str))]
+    pub in_dir: PathBuf,
+
+    /// The directory to output to. Will be created if it doesn't exist.
+    #[structopt(name = "OUT_DIR", parse(from_os_str))]
+    pub out_dir: PathBuf,
+
+    /// The number of files to select.
+    #[structopt(short, long, default_value = "1")]
     pub num_files: usize,
+
+    /// Whether to move the files from IN_DIR to OUT_DIR, rather than cp.
+    #[structopt(short, long)]
     pub move_files: bool,
+
+    /// Execute the copy or move. Specify a seed for deterministic behavior.
+    #[structopt(short, long)]
     pub go: bool,
-    pub no_color: bool,
+
+    /// The seed to use for the PRNG (u64).
+    #[structopt(short, long)]
     pub seed: Option<u64>,
 }
 
 /// Return a shuffled vector of paths based on the seed, if provided.
-fn get_shuffled_paths(args: &Args) -> Result<Vec<fs::DirEntry>, Error> {
+fn get_shuffled_paths(args: &Args) -> Result<Vec<fs::DirEntry>, RandSelectError> {
     match fs::read_dir(&args.in_dir) {
         Ok(paths) => {
             // Use seed if provided, else random entropy
@@ -63,47 +95,41 @@ fn get_shuffled_paths(args: &Args) -> Result<Vec<fs::DirEntry>, Error> {
             trace! {"Shuffled: {:#?}", vec_paths};
             Ok(vec_paths)
         }
-        Err(e) => Err(e),
+        Err(e) => Err(e.into()),
     }
 }
 
-fn paths_are_valid(in_dir: &str, out_dir: &str) -> Result<(), Error> {
-    let in_path = fs::canonicalize(in_dir)?;
-    if !in_path.is_dir() {
-        error! {"Input directory is not a directory: {}", in_dir};
-        return Err(Error::new(
-            ErrorKind::InvalidInput,
+fn paths_are_valid(in_dir: &Path, out_dir: &Path) -> Result<(), RandSelectError> {
+    if !in_dir.is_dir() {
+        error!("Input directory is not a directory: {}", in_dir.display());
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
             "Input directory is not a directory.",
-        ));
+        )
+        .into());
     }
 
-    // Only check output directory if it exists
-    if let Ok(out_path) = fs::canonicalize(out_dir) {
-        if in_path == out_path {
-            error!(
-                "The output directory cannot be the same as the input directory.\n{} == {}",
-                in_path.to_str().unwrap(),
-                out_path.to_str().unwrap()
-            );
-            return Err(Error::new(
-                ErrorKind::InvalidInput,
-                "Output and input directory were the same.",
-            ));
-        }
+    if in_dir == out_dir {
+        error!(
+            "The output directory cannot be the same as the input directory.\n{} == {}",
+            in_dir.display(),
+            out_dir.display()
+        );
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "Output and input directory were the same.",
+        )
+        .into());
     }
 
     Ok(())
 }
 
 /// The primary driver of the library to process the provided Args.
-pub fn run(args: &mut Args) -> Result<(), Error> {
-    debug! {"Input args: {:#?}", args};
+pub fn run(args: &mut Args) -> Result<(), RandSelectError> {
+    debug!("Input args: {:#?}", args);
 
-    paths_are_valid(args.in_dir.as_str(), args.out_dir.as_str())?;
-
-    if args.no_color {
-        colored::control::set_override(false);
-    }
+    paths_are_valid(args.in_dir.as_path(), args.out_dir.as_path())?;
 
     match get_shuffled_paths(args) {
         Ok(paths) => {
@@ -111,7 +137,7 @@ pub fn run(args: &mut Args) -> Result<(), Error> {
             for file in selected_files {
                 let dest = format!(
                     "{}/{}",
-                    args.out_dir,
+                    args.out_dir.display(),
                     file.file_name().into_string().unwrap()
                 );
                 // Delete file if move
@@ -149,15 +175,16 @@ mod test {
 
     #[test]
     fn test_valid_paths() {
-        let rand_output: String =
+        let rand_path =
             String::from_utf8(thread_rng().sample_iter(&Alphanumeric).take(18).collect()).unwrap();
+        let rand_output = Path::new(&rand_path);
 
-        paths_are_valid(".", &rand_output).expect("Paths are valid.");
+        paths_are_valid(Path::new("."), rand_output).expect("Paths are valid.");
     }
 
     #[test]
     fn test_invalid_paths() {
-        if let Ok(_) = paths_are_valid(".", ".") {
+        if let Ok(_) = paths_are_valid(Path::new("."), Path::new(".")) {
             panic!("Should have failed with same paths");
         }
     }

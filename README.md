@@ -27,18 +27,19 @@ randselect
 Tool for randomly selecting files from a directory.
 
 USAGE:
-    randselect [FLAGS] [OPTIONS] -i <IN_DIR> -n <N> -o <OUT_DIR>
+    randselect [FLAGS] [OPTIONS] <OUT_DIR> <IN_DIR>
 
 FLAGS:
-    -g, --go          Execute the copy or move. Specify a seed for deterministic behavior.
-    -h, --help        Prints help information
-    -m                Whether to move the selected files rather than copy.
-    -c, --no_color    Disable colorized output. Only supported in Unix-like OSes.
-    -V, --version     Prints version information
+    -g, --go            Execute the copy or move. Specify a seed for deterministic behavior
+    -h, --help          Prints help information
+    -m, --move-files    Whether to move the files from IN_DIR to OUT_DIR, rather than cp
+    -V, --version       Prints version information
 
 OPTIONS:
-    -i <IN_DIR>         The input directory to select from.
-    -n <N>              The number of files to select.
-    -o <OUT_DIR>        The directory to output to. Will be created if it doesn't exist.
-    -s <SEED>           The seed to use for the PRNG (u64).
+    -n, --num-files <num-files>    The number of files to select [default: 1]
+    -s, --seed <seed>              The seed to use for the PRNG (u64)
+
+ARGS:
+    <OUT_DIR>    The directory to output to. Will be created if it doesn't exist
+    <IN_DIR>     The input directory to select from
 ```
