@@ -1,12 +1,8 @@
-mod utils;
-
 use std::process;
 
 use clap::{crate_authors, crate_version, App, AppSettings, Arg};
 use human_panic::setup_panic;
 use log::warn;
-
-use crate::utils::setup_logging;
 
 fn parse_args() -> randselect::Args {
     let matches = App::new("randselect")
@@ -116,8 +112,9 @@ fn parse_args() -> randselect::Args {
 
 fn main() {
     setup_panic!();
+    pretty_env_logger::init();
     let mut args = parse_args();
-    setup_logging(args.verbosity, args.no_color).expect("Unable to setup logging.");
+
     if let Err(e) = randselect::run(&mut args) {
         warn!("{:?}: {:?}", e, args);
         process::exit(1);

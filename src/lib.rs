@@ -28,8 +28,6 @@
 //!     -s <SEED>           The seed to use for the PRNG (u64).
 //! ```
 
-pub mod utils;
-
 use std::fs;
 use std::io::{Error, ErrorKind};
 
