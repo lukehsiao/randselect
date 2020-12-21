@@ -6,6 +6,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2020-12-21
+
+### Changed
+- [lukehsiao][lh]: Simplified the codebase using structopt, pretty\_env\_logger,
+  etc.
+- [lukehsiao][lh]: Input and Output directories are now arguments, not flags.
+- [lukehsiao][lh]: Added Apache licensing option.
+
+### Removed
+- [lukehsiao][lh]: Removed the verbosity flag.
+- [lukehsiao][lh]: Removed the no_color flag.
+
 ## [0.2.4] - 2018-01-07
 
 ### Changed
@@ -44,4 +56,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2018-11-24
 Initial release
 
+
 [lh]: https://github.com/lukehsiao
+
+[Unreleased]: https://github.com/lukehsiao/randselect/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/lukehsiao/randselect/compare/v0.2.4...v0.3.0
+[0.2.4]: https://github.com/lukehsiao/randselect/releases/compare/v0.2.3...v0.2.4
+[0.2.3]: https://github.com/lukehsiao/randselect/releases/compare/v0.2.2...v0.2.3
+[0.2.2]: https://github.com/lukehsiao/randselect/releases/compare/v0.2.1...v0.2.2
+[0.2.1]: https://github.com/lukehsiao/randselect/releases/compare/v0.2.0...v0.2.1
+[0.2.0]: https://github.com/lukehsiao/randselect/releases/compare/v0.1.1...v0.2.0
+[0.1.1]: https://github.com/lukehsiao/randselect/releases/compare/v0.1.0...v0.1.1
+[0.1.0]: https://github.com/lukehsiao/randselect/releases/tag/v0.1.0
