@@ -88,7 +88,13 @@ fn get_shuffled_paths(args: &Args) -> Result<Vec<fs::DirEntry>, RandSelectError>
                 None => StdRng::from_entropy(),
             };
 
-            let mut vec_paths: Vec<_> = paths.map(|r| r.unwrap()).collect();
+            // Only consider files, not directories
+            let mut vec_paths: Vec<_> = paths
+                .filter_map(|p| match p {
+                    Ok(entry) if entry.file_type().ok()?.is_file() => Some(entry),
+                    _ => None,
+                })
+                .collect();
 
             // Generate a random permutation of the files
             vec_paths.shuffle(&mut rng);
