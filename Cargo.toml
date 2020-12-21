@@ -19,4 +19,4 @@ colored = "2.0.0"
 fern = { version = "0.6.0", features = ["colored"] }
 human-panic = "1.0.3"
 log = "0.4.11"
-rand = "0.7.3"
+rand = "0.8.0"
