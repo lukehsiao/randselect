@@ -1,14 +1,14 @@
 # randselect
 [![Crates.io](https://img.shields.io/crates/v/randselect.svg)](https://crates.io/crates/randselect)
 [![docs.rs](https://docs.rs/randselect/badge.svg)](https://docs.rs/randselect)
-[![Travis (.com)](https://img.shields.io/travis/com/lukehsiao/randselect.svg)](https://travis-ci.com/lukehsiao/randselect)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/lukehsiao/randselect/rust)](https://github.com/lukehsiao/randselect/actions)
 
-This crate provides a simple command line utility for randomly selecting N
-files from a directory and copying or moving them to a target directory.
+This crate provides a simple command line utility for randomly selecting N files
+from a directory and copying or moving them to a target directory.
 
-`randselect` operates (inefficiently) by generating a random permutation of
-the files in a given directory, then moving or copying the first N files in
-the resulting permutation to a target directory.
+`randselect` operates (inefficiently) by generating a random permutation of the
+files in a given directory, then moving or copying the first N files in the
+resulting permutation to a target directory.
 
 Could you do this with a few lines of bash? Almost certainly! This was just an
 excuse to write some Rust.
