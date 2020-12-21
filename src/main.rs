@@ -26,12 +26,6 @@ fn parse_args() -> randselect::Args {
                 .required(true),
         )
         .arg(
-            Arg::with_name("verbosity")
-                .short("v")
-                .multiple(true)
-                .help("Sets the level of verbosity"),
-        )
-        .arg(
             Arg::with_name("num_files")
                 .short("n")
                 .value_name("N")
@@ -101,12 +95,6 @@ fn parse_args() -> randselect::Args {
         move_files: matches.is_present("move"),
         go: matches.is_present("go"),
         no_color: matches.is_present("no_color"),
-        verbosity: match matches.occurrences_of("verbosity") {
-            0 => 0,
-            1 => 1,
-            2 => 2,
-            3 | _ => 3,
-        },
     }
 }
 

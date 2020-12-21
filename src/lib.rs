@@ -19,7 +19,6 @@
 //!     -m                Whether to move the selected files rather than copy.
 //!     -c, --no_color    Disable colorized output. Only supported in Unix-like OSes.
 //!     -V, --version     Prints version information
-//!     -v                Sets the level of verbosity
 //!
 //! OPTIONS:
 //!     -i <IN_DIR>         The input directory to select from.
@@ -37,7 +36,6 @@ use rand::prelude::{SeedableRng, SliceRandom, StdRng};
 
 #[derive(Debug)]
 pub struct Args {
-    pub verbosity: u8,
     pub out_dir: String,
     pub in_dir: String,
     pub num_files: usize,

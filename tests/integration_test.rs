@@ -3,7 +3,6 @@ extern crate randselect;
 #[test]
 fn runs_without_error() {
     let mut test_args = randselect::Args {
-        verbosity: 3,
         out_dir: "./test/".to_string(),
         in_dir: ".".to_string(),
         num_files: 10,
@@ -20,7 +19,6 @@ fn runs_without_error() {
 #[test]
 fn runs_with_error() {
     let mut test_args = randselect::Args {
-        verbosity: 3,
         out_dir: ".".to_string(),
         in_dir: ".".to_string(),
         num_files: 10,
