@@ -32,7 +32,7 @@ maintenance = { status = "passively-maintained" }
 
 [dependencies]
 chrono = "0.4.19"
-clap = "2.34.0"
+clap = "3.1.9"
 colored = "2.0.0"
 human-panic = "1.0.3"
 log = "0.4.16"
