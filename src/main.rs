@@ -1,18 +1,18 @@
 use std::process;
 
+use clap::Parser;
 use human_panic::setup_panic;
 use log::warn;
-use structopt::StructOpt;
 
-use randselect::Args;
+use randselect::Cli;
 
 fn main() {
     setup_panic!();
     pretty_env_logger::init();
-    let mut args = Args::from_args();
+    let cli = Cli::parse();
 
-    if let Err(e) = randselect::run(&mut args) {
-        warn!("{:?}: {:?}", e, args);
+    if let Err(e) = randselect::run(&cli) {
+        warn!("{:?}: {:?}", e, cli);
         process::exit(1);
     };
 }

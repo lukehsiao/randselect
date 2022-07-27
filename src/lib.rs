@@ -11,32 +11,30 @@
 //! Tool for randomly selecting files from a directory.
 //!
 //! USAGE:
-//!     randselect [FLAGS] [OPTIONS] <OUT_DIR> <IN_DIR>
-//!
-//! FLAGS:
-//!     -g, --go            Execute the copy or move. Specify a seed for deterministic behavior
-//!     -h, --help          Prints help information
-//!     -m, --move-files    Whether to move the files from IN_DIR to OUT_DIR, rather than cp
-//!     -V, --version       Prints version information
-//!
-//! OPTIONS:
-//!     -n, --num-files <num-files>    The number of files to select [default: 1]
-//!     -s, --seed <seed>              The seed to use for the PRNG (u64)
+//!     randselect [OPTIONS] <IN_DIR> <OUT_DIR>
 //!
 //! ARGS:
-//!     <OUT_DIR>    The directory to output to. Will be created if it doesn't exist
 //!     <IN_DIR>     The input directory to select from
+//!     <OUT_DIR>    The directory to output to. Will be created if it doesn't exist
+//!
+//! OPTIONS:
+//!     -g, --go                       Execute the copy or move. Specify a seed for deterministic
+//!                                    behavior
+//!     -h, --help                     Print help information
+//!     -m, --move-files               Whether to move the files from IN_DIR to OUT_DIR, rather than cp
+//!     -n, --num-files <NUM_FILES>    The number of files to select [default: 1]
+//!     -s, --seed <SEED>              The seed to use for the PRNG (u64)
+//!     -V, --version                  Print version information
 //! ```
 
 use std::fs;
 
+use clap::AppSettings;
 use colored::Colorize;
 use log::{debug, error, trace};
 use rand::prelude::{SeedableRng, SliceRandom, StdRng};
 use std::io;
 use std::path::{Path, PathBuf};
-use structopt::clap::AppSettings;
-use structopt::StructOpt;
 use thiserror::Error;
 
 #[derive(Error, Debug)]
@@ -45,44 +43,45 @@ pub enum RandSelectError {
     IoError(#[from] io::Error),
 }
 
-#[derive(Debug, StructOpt)]
-#[structopt(
+#[derive(Debug, clap::Parser)]
+#[clap(
+    version,
     about,
     setting(AppSettings::ColoredHelp),
     setting(AppSettings::ColorAuto)
 )]
-pub struct Args {
+pub struct Cli {
     /// The input directory to select from.
-    #[structopt(name = "IN_DIR", parse(from_os_str))]
+    #[clap(name = "IN_DIR", parse(from_os_str))]
     pub in_dir: PathBuf,
 
     /// The directory to output to. Will be created if it doesn't exist.
-    #[structopt(name = "OUT_DIR", parse(from_os_str))]
+    #[clap(name = "OUT_DIR", parse(from_os_str))]
     pub out_dir: PathBuf,
 
     /// The number of files to select.
-    #[structopt(short, long, default_value = "1")]
+    #[clap(short, long, default_value = "1")]
     pub num_files: usize,
 
     /// Whether to move the files from IN_DIR to OUT_DIR, rather than cp.
-    #[structopt(short, long)]
+    #[clap(short, long)]
     pub move_files: bool,
 
     /// Execute the copy or move. Specify a seed for deterministic behavior.
-    #[structopt(short, long)]
+    #[clap(short, long)]
     pub go: bool,
 
     /// The seed to use for the PRNG (u64).
-    #[structopt(short, long)]
+    #[clap(short, long)]
     pub seed: Option<u64>,
 }
 
 /// Return a shuffled vector of paths based on the seed, if provided.
-fn get_shuffled_paths(args: &Args) -> Result<Vec<fs::DirEntry>, RandSelectError> {
-    match fs::read_dir(&args.in_dir) {
+fn get_shuffled_paths(cli: &Cli) -> Result<Vec<fs::DirEntry>, RandSelectError> {
+    match fs::read_dir(&cli.in_dir) {
         Ok(paths) => {
             // Use seed if provided, else random entropy
-            let mut rng: StdRng = match args.seed {
+            let mut rng: StdRng = match cli.seed {
                 // NOTE: Not cryptographically secure, but good enough for us.
                 Some(seed) => SeedableRng::seed_from_u64(seed),
                 None => StdRng::from_entropy(),
@@ -131,40 +130,40 @@ fn paths_are_valid(in_dir: &Path, out_dir: &Path) -> Result<(), RandSelectError>
     Ok(())
 }
 
-/// The primary driver of the library to process the provided Args.
-pub fn run(args: &mut Args) -> Result<(), RandSelectError> {
-    debug!("Input args: {:#?}", args);
+/// The primary driver of the library to process the provided Cli.
+pub fn run(cli: &Cli) -> Result<(), RandSelectError> {
+    debug!("Input args: {:#?}", cli);
 
-    paths_are_valid(args.in_dir.as_path(), args.out_dir.as_path())?;
+    paths_are_valid(cli.in_dir.as_path(), cli.out_dir.as_path())?;
 
-    match get_shuffled_paths(args) {
+    match get_shuffled_paths(cli) {
         Ok(paths) => {
-            let selected_files: Vec<&fs::DirEntry> = paths.iter().take(args.num_files).collect();
+            let selected_files: Vec<&fs::DirEntry> = paths.iter().take(cli.num_files).collect();
             for file in selected_files {
                 let dest = format!(
                     "{}/{}",
-                    args.out_dir.display(),
+                    cli.out_dir.display(),
                     file.file_name().into_string().unwrap()
                 );
                 // Delete file if move
-                if args.move_files {
+                if cli.move_files {
                     println!("{} {}", "--".red(), file.path().to_str().unwrap().red());
                 }
                 println!("{} {}", "++".green(), dest.green());
-                if args.go {
+                if cli.go {
                     // Create output dir
-                    fs::create_dir_all(&args.out_dir).unwrap();
+                    fs::create_dir_all(&cli.out_dir).unwrap();
 
                     // Copy file
                     fs::copy(file.path(), &dest).unwrap();
 
                     // Delete file if move
-                    if args.move_files {
+                    if cli.move_files {
                         fs::remove_file(file.path()).unwrap();
                     }
                 }
             }
-            if !args.go {
+            if !cli.go {
                 println!("Re-run randselect with --go to write these changes to the filesystem.");
             }
             Ok(())
@@ -193,5 +192,11 @@ mod test {
         if let Ok(_) = paths_are_valid(Path::new("."), Path::new(".")) {
             panic!("Should have failed with same paths");
         }
+    }
+
+    #[test]
+    fn verify_app() {
+        use clap::IntoApp;
+        Cli::into_app().debug_assert()
     }
 }
