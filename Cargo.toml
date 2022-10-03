@@ -13,8 +13,9 @@ categories = ["command-line-utilities"]
 edition = "2021"
 
 [dependencies]
+anyhow = "1.0.65"
 chrono = "0.4.22"
-clap = { version = "3.2.22", features = ["derive"] }
+clap = { version = "4.0.9", features = ["derive"] }
 colored = "2.0.0"
 human-panic = "1.0.3"
 log = "0.4.17"

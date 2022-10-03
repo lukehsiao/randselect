@@ -1,35 +1,5 @@
-//! # randselect
-//! This crate provides a simple command line utility for randomly selecting N
-//! files from a directory and copying/moving them to a target directory.
-//!
-//! `randselect` operates (inefficiently) by generating a random permutation of
-//! the files in a given directory, then moving/copying the first N files in
-//! the resulting permutation to a target directory.
-//!
-//! ```txt
-//! randselect
-//! Tool for randomly selecting files from a directory.
-//!
-//! USAGE:
-//!     randselect [OPTIONS] <IN_DIR> <OUT_DIR>
-//!
-//! ARGS:
-//!     <IN_DIR>     The input directory to select from
-//!     <OUT_DIR>    The directory to output to. Will be created if it doesn't exist
-//!
-//! OPTIONS:
-//!     -g, --go                       Execute the copy or move. Specify a seed for deterministic
-//!                                    behavior
-//!     -h, --help                     Print help information
-//!     -m, --move-files               Whether to move the files from IN_DIR to OUT_DIR, rather than cp
-//!     -n, --num-files <NUM_FILES>    The number of files to select [default: 1]
-//!     -s, --seed <SEED>              The seed to use for the PRNG (u64)
-//!     -V, --version                  Print version information
-//! ```
-
 use std::fs;
 
-use clap::AppSettings;
 use colored::Colorize;
 use log::{debug, error, trace};
 use rand::prelude::{SeedableRng, SliceRandom, StdRng};
@@ -44,35 +14,30 @@ pub enum RandSelectError {
 }
 
 #[derive(Debug, clap::Parser)]
-#[clap(
-    version,
-    about,
-    setting(AppSettings::ColoredHelp),
-    setting(AppSettings::ColorAuto)
-)]
+#[command(version, about)]
 pub struct Cli {
     /// The input directory to select from.
-    #[clap(name = "IN_DIR", parse(from_os_str))]
+    #[arg(value_name("IN_DIR"))]
     pub in_dir: PathBuf,
 
     /// The directory to output to. Will be created if it doesn't exist.
-    #[clap(name = "OUT_DIR", parse(from_os_str))]
+    #[arg(value_name("OUT_DIR"))]
     pub out_dir: PathBuf,
 
     /// The number of files to select.
-    #[clap(short, long, default_value = "1")]
+    #[arg(short, long, default_value = "1")]
     pub num_files: usize,
 
     /// Whether to move the files from IN_DIR to OUT_DIR, rather than cp.
-    #[clap(short, long)]
+    #[arg(short, long)]
     pub move_files: bool,
 
     /// Execute the copy or move. Specify a seed for deterministic behavior.
-    #[clap(short, long)]
+    #[arg(short, long)]
     pub go: bool,
 
     /// The seed to use for the PRNG (u64).
-    #[clap(short, long)]
+    #[arg(short, long)]
     pub seed: Option<u64>,
 }
 
@@ -196,7 +161,7 @@ mod test {
 
     #[test]
     fn verify_app() {
-        use clap::IntoApp;
-        Cli::into_app().debug_assert()
+        use clap::CommandFactory;
+        Cli::command().debug_assert()
     }
 }

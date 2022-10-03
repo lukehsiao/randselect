@@ -1,18 +1,15 @@
-use std::process;
-
+use anyhow::Result;
 use clap::Parser;
 use human_panic::setup_panic;
-use log::warn;
 
 use randselect::Cli;
 
-fn main() {
+fn main() -> Result<()> {
     setup_panic!();
     pretty_env_logger::init();
     let cli = Cli::parse();
 
-    if let Err(e) = randselect::run(&cli) {
-        warn!("{:?}: {:?}", e, cli);
-        process::exit(1);
-    };
+    randselect::run(&cli)?;
+
+    Ok(())
 }
