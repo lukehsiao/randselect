@@ -21,7 +21,7 @@ human-panic = "1.1.0"
 log = "0.4.17"
 pretty_env_logger = "0.4.0"
 rand = "0.8.5"
-thiserror = "1.0.38"
+thiserror = "1.0.39"
 
 [profile.release]
 debug = false
