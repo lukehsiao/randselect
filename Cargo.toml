@@ -2,7 +2,7 @@
 name = "randselect"
 version = "0.3.1-alpha.0"
 authors = ["Luke Hsiao <luke@hsiao.dev>"]
-license = "Apache-2.0 OR MIT"
+license = "BlueOak-1.0.0"
 description= "Tool for randomly selecting files from a directory."
 readme = "README.md"
 repository = "https://github.com/lukehsiao/randselect"
