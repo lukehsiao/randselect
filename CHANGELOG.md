@@ -1,10 +1,15 @@
-# Changelog
-All notable changes to this project will be documented in this file.
+## 0.3.1 - 2023-07-03
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+### Documentation
+- (README) Update badges
 
-## [Unreleased]
+### Miscellaneous Tasks
+- Bump development version to 0.3.1-alpha.0
+- Relicense to `BlueOak-1.0.0`
+
+See the commits here: [0.3.1]
+
+[0.3.1]: https://github.com/lukehsiao/randselect/compare/v0.3.0...v0.3.1
 
 ## [0.3.0] - 2020-12-21
 
