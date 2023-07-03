@@ -1,7 +1,7 @@
 # randselect
-[![Crates.io](https://img.shields.io/crates/v/randselect.svg)](https://crates.io/crates/randselect)
-[![docs.rs](https://docs.rs/randselect/badge.svg)](https://docs.rs/randselect)
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/lukehsiao/randselect/rust)](https://github.com/lukehsiao/randselect/actions)
+[![Crates.io](https://img.shields.io/crates/v/randselect)](https://crates.io/crates/randselect)
+[![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/lukehsiao/randselect/rust.yml)](https://github.com/lukehsiao/randselect/actions/workflows/rust.yml)
+[![Crates.io](https://img.shields.io/crates/l/randselect)](https://github.com/lukehsiao/randselect/blob/main/LICENSE)
 
 This crate provides a simple command line utility for randomly selecting N files
 from a directory and copying or moving them to a target directory.
