@@ -14,7 +14,7 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.72"
-chrono = "0.4.26"
+chrono = "0.4.28"
 clap = { version = "4.1.11", features = ["derive"] }
 colored = "2.0.4"
 human-panic = "1.2.0"
